@@ -1,0 +1,8 @@
+edge time framework
+
+2.agar connection nhi hae tab banao varna 
+connection bna hua hai3.agar connection bna hua hai to usko use kro varna naya connection bna
+
+3.if existing user by email then if existing user by email is verifed the success false
+else save the updared user
+else create new user ans save it 
