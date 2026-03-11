@@ -1,6 +1,7 @@
 import { resend } from "@/lib/resend";
 import VerificationEmail from "@/emails/VerificationEmail";   
 import { ApiResponse } from "@/types/ApiResponse";
+import * as React from 'react';
 
 export async function sendVerificationEmail(
     email: string,
@@ -12,7 +13,10 @@ export async function sendVerificationEmail(
             from: 'onboarding@resend.dev',
             to: email,
             subject: 'Mystery message | Verification Code',
-            react: VerificationEmail({ username, otp: verifyCode }),
+            react: React.createElement(VerificationEmail, {
+                username,
+                otp: verifyCode,
+            }),
         });
         return {
             success: true,

@@ -89,19 +89,21 @@ export async function GET(request: Request) {
 
   try {
     const result = await UserModel.aggregate([
-      {
-        $match: { _id: userId },
-      },
-      {
-        $unwind: "$messages",
-      },
-      {
-        $sort: { "messages.createdAt": -1 },
-      },
+      { $match: { _id: userId } },
+      { $unwind: { path: "$messages", preserveNullAndEmptyArrays: true } },
+      { $sort: { "messages.createdAt": -1 } },
       {
         $group: {
           _id: "$_id",
-          messages: { $push: "$messages" },
+          messages: {
+            $push: {
+              $cond: {
+                if: { $gt: ["$messages", null] },
+                then: "$messages",
+                else: "$$REMOVE",
+              },
+            },
+          },
         },
       },
     ]);
@@ -119,15 +121,16 @@ export async function GET(request: Request) {
     return Response.json(
       {
         success: true,
-        messages: result[0].messages,
+        messages: result[0].messages || [],
       },
       { status: 200 }
     );
   } catch (error) {
+    console.error("Error fetching messages:", error);
     return Response.json(
       {
         success: false,
-        message: "Not authenticated",
+        message: "Internal server error",
       },
       { status: 500 }
     );

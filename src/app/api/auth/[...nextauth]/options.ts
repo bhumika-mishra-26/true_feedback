@@ -10,8 +10,8 @@ export const authOptions: NextAuthOptions = {
            id: "credentials",
            name: "Credentials",
            credentials:{
-            email:{
-                label: "eamil",
+            identifier:{
+                label: "Email/Username",
                 type: "text"
             },
             password: {

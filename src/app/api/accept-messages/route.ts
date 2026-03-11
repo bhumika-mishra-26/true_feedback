@@ -29,32 +29,35 @@ import { success } from "zod";
     const userId=user._id;
   const {acceptMessages}=  await request.json()
   try{
-    const updatedUser=await UserModel.findByIdAndUpdate(
-        userId,
-        {isAcceptingMessages:acceptMessages},
+    const updatedUser = await UserModel.findByIdAndUpdate(
+      userId,
+      { isAcceptingMessages: acceptMessages },
+      {
+        new: true,
+      }
+    );
+    if (!updatedUser) {
+      return Response.json(
         {
-            new:true
-        }
-
-    )
-if(!updatedUser) 
-{
-    return Response.json(
-        {
-            success:false,
-            message:"Failed to update user status to accept messages"
+          success: false,
+          message: "Failed to update user status to accept messages",
         },
         {
-            status:401
+          status: 401,
         }
-    )
-}
-}
-
-  
-
-  catch (error)
-  {
+      );
+    }
+    return Response.json(
+      {
+        success: true,
+        message: "Message acceptance status updated successfully",
+        updatedUser,
+      },
+      {
+        status: 200,
+      }
+    );
+  } catch (error) {
     console.log("Failed to update user status to accept messages",error);
    return Response.json(
        

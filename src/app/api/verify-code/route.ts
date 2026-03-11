@@ -10,7 +10,7 @@ import { is } from "zod/locales";
     const decodedUsername = decodeURIComponent(username);
       
       
-        const user=await UserModel.findOne({verificationCode:code});
+        const user=await UserModel.findOne({username:decodedUsername});
         if(!user)
         {
             return Response.json(

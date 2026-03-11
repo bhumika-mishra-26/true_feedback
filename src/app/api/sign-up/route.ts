@@ -3,18 +3,6 @@ import UserModel from "@/models/User";
 import bcrypt from "bcryptjs";
 import { sendVerificationEmail } from "@/helpers/sendVerificationEmail";
 
-/**
- * Handles sign up request.
- * Checks if username is already taken by a verified user.
- * Checks if email is already in use by an unverified user.
- * If existing user is found, updates the existing user with new password and verification code.
- * If no existing user is found, creates a new user with given details and sends a verification email.
- * Returns a JSON response with success and message.
- * If an error occurs during registration, returns a JSON response with success set to false and an error message.
- * If an error occurs during sending verification email, returns a JSON response with success set to false and an error message.
- * @param req - Request object
- * @returns JSON response with success and message
- */
 export async function POST(req: Request) {
     await dbConnect();
     try {
@@ -53,33 +41,20 @@ export async function POST(req: Request) {
                 existingUserByEmail.password = hashedPassword;
                 existingUserByEmail.verifyCode = verifyCode;
                 existingUserByEmail.verifyCodeExpiry = new Date(Date.now() + 3600000); 
-                // 1 hour
                 await existingUserByEmail.save();
             }
         }
         else {
-                // Update existing user with new password and verify code
-                const hashedPassword = await bcrypt.hash(password, 10);
-                const expirydate=new Date()
-                expirydate.setHours(expirydate.getHours()+1)
-
-        //         existingUserByEmail.password = hashedPassword;
-        //         existingUserByEmail.verifyCode = verifyCode;
-        //         existingUserByEmail.verifyCodeExpiry = new Date(Date.now() + 3600000); // 1 hour
-        //         await existingUserByEmail.save();
-        //     }
-        // } else {
-        //     // Create new user
-        //     const hashedPassword = await bcrypt.hash(password, 10);
-        //     const expiryDate = new Date();
-        //     expiryDate.setHours(expiryDate.getHours() + 1);
+            const hashedPassword = await bcrypt.hash(password, 10);
+            const expiryDate = new Date();
+            expiryDate.setHours(expiryDate.getHours() + 1);
 
             const newUser = new UserModel({
                 username,
                 email,
                 password: hashedPassword,
                 verifyCode,
-                verifyCodeExpiry: expirydate,
+                verifyCodeExpiry: expiryDate,
                 isVerified: false,
                 isAcceptingMessages: true,
                 messages: []
