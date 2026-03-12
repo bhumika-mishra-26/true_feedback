@@ -45,6 +45,18 @@ export async function POST(req: Request) {
             }
         }
         else {
+            // Check if the username is taken by an unverified user with a different email
+            const existingUserByUsername = await UserModel.findOne({ username });
+            if (existingUserByUsername) {
+                return Response.json(
+                    {
+                        success: false,
+                        message: "Username is already taken"
+                    },
+                    { status: 400 }
+                );
+            }
+
             const hashedPassword = await bcrypt.hash(password, 10);
             const expiryDate = new Date();
             expiryDate.setHours(expiryDate.getHours() + 1);

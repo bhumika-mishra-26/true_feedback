@@ -9,7 +9,7 @@ export async function sendVerificationEmail(
     verifyCode: string
 ): Promise<ApiResponse> {
     try {
-        await resend.emails.send({
+        const { data, error } = await resend.emails.send({
             from: 'onboarding@resend.dev',
             to: email,
             subject: 'Mystery message | Verification Code',
@@ -18,12 +18,21 @@ export async function sendVerificationEmail(
                 otp: verifyCode,
             }),
         });
+
+        if (error) {
+            console.error("Resend API Error:", error);
+            return {
+                success: false,
+                message: error.message || 'Error sending verification email'
+            };
+        }
+
         return {
             success: true,
             message: 'Verification email sent successfully'
         };
     } catch (emailError) {
-        console.error("Error sending verification email", emailError);
+        console.error("Unexpected error sending verification email", emailError);
         return { 
             success: false, 
             message: "Error sending verification email" 
